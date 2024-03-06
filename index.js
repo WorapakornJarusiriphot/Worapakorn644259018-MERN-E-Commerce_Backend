@@ -3,6 +3,7 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const productRouter = require("./routes/product.router");
+const cartRouter = require("./routes/cart.router");
 const swaggerJSDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 
@@ -44,7 +45,7 @@ const CLIENT_URL = process.env.CLIENT_URL;
 app.use(cors({ credentials: true, origin: CLIENT_URL }));
 app.use(express.json());
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-//Database Connection
+//Databse Connection
 const MONGODB_URI = process.env.MONGODB_URI;
 mongoose.connect(MONGODB_URI);
 
@@ -53,6 +54,7 @@ app.get("/", (req, res) => {
 });
 //Add Router
 app.use("/products", productRouter);
+app.use("/carts", cartRouter);
 
 //Run Server
 const PORT = process.env.PORT;
