@@ -31,15 +31,15 @@
  *                  type: number
  *                  description: The quantiy of the product
  *          example:
- *              product_id: "60c8b9e7f3e9a5e6b0a8e0b1"
- *              email: "Macbook Pro"
+ *              productId:  "60c5xxxxx"
+ *              name: "Macbook Pro"
  *              price: 2000
- *              name: "A great laptop"
+ *              email: "worapakorn@gmail.com"
  *              image: "https://source.unsplash.com/random/100x100/?macbook"
- *              quantity: 2
+ *              quantity: 5
  * tags:
- *  name: Cart items
- *  description: The carts managing API
+ *  name: Carts
+ *  description: The cart items managing API
  */
 const express = require("express");
 const router = express.Router();
@@ -168,7 +168,7 @@ router.post("/", async (req, res) => {
  * /carts/{id}:
  *  put:
  *      summary: Update the cart item details
- *      tags: [Cart]
+ *      tags: [Carts]
  *      parameters:
  *          -   in: path
  *              name: id
@@ -248,6 +248,31 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /carts/{email}:
+ *  delete:
+ *      summary: Delete all cart items by email
+ *      tags: [Carts]
+ *      parameters:
+ *          -   in: path
+ *              name: email
+ *              required: true
+ *              schema:
+ *                  type: string
+ *              description: The user email
+ *      responses:
+ *          200:
+ *              description: The all cart items are deleted
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          $ref: '#/components/schemas/Cart'
+ *          404:
+ *              description: Empty cart
+ *          500:
+ *              description: Some error happened
+ */
 router.delete("/clear/:email", async (req, res) => {
   const { email } = req.params;
   try {
