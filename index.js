@@ -6,6 +6,12 @@ const productRouter = require("./routes/product.router");
 const cartRouter = require("./routes/cart.router");
 const swaggerJSDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
+const admin = require('firebase-admin');
+const serviceAccount = require('./mern-e-commerce-woja-firebase-adminsdk-rrao7-b60aec0627.json');
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
 
 const swaggerDefinition = {
   openapi: "3.0.0",
@@ -64,6 +70,23 @@ app.get("/", (req, res) => {
 //Add Router
 app.use("/products", productRouter);
 app.use("/carts", cartRouter);
+app.get('/all-users', async (req, res) => {
+  try {
+    const listUsersResult = await admin.auth().listUsers();
+    const users = listUsersResult.users.map(userRecord => ({
+      uid: userRecord.uid,
+      email: userRecord.email,
+      emailVerified: userRecord.emailVerified,
+      displayName: userRecord.displayName,
+      isAnonymous: userRecord.isAnonymous,
+      photoURL: userRecord.photoURL
+    }));
+    res.json(users);
+  } catch (error) {
+    console.error('Error listing users:', error);
+    res.status(500).send('Internal server error');
+  }
+});
 
 //Run Server
 const PORT = process.env.PORT;
