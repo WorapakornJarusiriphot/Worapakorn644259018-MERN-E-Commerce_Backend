@@ -4,14 +4,10 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const productRouter = require("./routes/product.router");
 const cartRouter = require("./routes/cart.router");
+const userRouter = require("./routes/user.router");
 const swaggerJSDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
-const admin = require('firebase-admin');
-const serviceAccount = require('./mern-e-commerce-woja-firebase-adminsdk-rrao7-b60aec0627.json');
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
-});
+const jwt = require("jsonwebtoken");
 
 const swaggerDefinition = {
   openapi: "3.0.0",
@@ -59,8 +55,7 @@ app.get("/swagger.json", (req, res) => {
   res.header("Content-Type", "application/json");
   res.send(swaggerSpec);
 });
-
-//Database Connection
+//Databse Connection
 const MONGODB_URI = process.env.MONGODB_URI;
 mongoose.connect(MONGODB_URI);
 
@@ -70,24 +65,17 @@ app.get("/", (req, res) => {
 //Add Router
 app.use("/products", productRouter);
 app.use("/carts", cartRouter);
-app.get('/all-users', async (req, res) => {
-  try {
-    const listUsersResult = await admin.auth().listUsers();
-    const users = listUsersResult.users.map(userRecord => ({
-      uid: userRecord.uid,
-      email: userRecord.email,
-      emailVerified: userRecord.emailVerified,
-      displayName: userRecord.displayName,
-      isAnonymous: userRecord.isAnonymous,
-      photoURL: userRecord.photoURL
-    }));
-    res.json(users);
-  } catch (error) {
-    console.error('Error listing users:', error);
-    res.status(500).send('Internal server error');
-  }
-});
+app.use("/users", userRouter);
 
+app.post("/jwt", async (req, res) => {
+  //create and return JWT
+  //{email, name}
+  const user = req.body;
+  const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+    expiresIn: "1h",
+  });
+  res.send({ token });
+});
 //Run Server
 const PORT = process.env.PORT;
 const server = app.listen(PORT, () => {
