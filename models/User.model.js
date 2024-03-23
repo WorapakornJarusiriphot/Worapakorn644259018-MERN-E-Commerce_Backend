@@ -12,7 +12,11 @@ const UserSchema = new Schema(
       unique: true,
     },
     photoURL: { type: String, required: true },
-    role: { type: String, enum: ["admin", "user"], dafault: "user" },
+    role: {
+      type: String,
+      enum: ["admin", "user"],
+      default: "user",
+    },
   },
   {
     timestamps: true,

@@ -55,7 +55,7 @@ app.get("/swagger.json", (req, res) => {
   res.header("Content-Type", "application/json");
   res.send(swaggerSpec);
 });
-//Databse Connection
+//Database Connection
 const MONGODB_URI = process.env.MONGODB_URI;
 mongoose.connect(MONGODB_URI);
 
